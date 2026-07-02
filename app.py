@@ -5422,34 +5422,25 @@ AI resume, cover letter and every previous InterviewGPT activity while answering
 
 
                             mentor_chat = generate_ai_career_mentor(
-
-
-
-                                mentor_context=mentor_context,
-
-
-
-                                target_company=company,
-
-
-
-                                target_role=role,
-
-
-
-                                user_query=mentor_question
-
-
-
+                            mentor_context=mentor_context,
+                            target_company=company,
+                            target_role=role,
+                            user_query=mentor_question
                             )
 
+                            st.session_state["career_chat"].append(
+                            {
+                            "role": "user",
+                            "content": mentor_question
+                            }
+                        )
 
-
-                            st.session_state[
-
-                                "career_chat"
-
-                            ] = mentor_chat
+                        st.session_state["career_chat"].append(
+                            {
+                            "role": "assistant",
+                            "content": mentor_chat
+                            }
+                        )
 
 
 
@@ -5513,34 +5504,14 @@ AI resume, cover letter and every previous InterviewGPT activity while answering
 
 
 
-        if st.session_state.get(
+        if st.session_state["career_chat"]:
 
-            "career_chat",
+         st.subheader("💬 AI Mentor Guidance")
 
-            ""
+    for message in st.session_state["career_chat"]:
 
-        ):
-
-
-
-            st.subheader(
-
-                "💬 AI Mentor Guidance"
-
-            )
-
-
-
-            st.info(
-
-                st.session_state[
-
-                    "career_chat"
-
-                ]
-
-            )
-
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
 
             st.divider()
