@@ -367,6 +367,8 @@ defaults = {
 
     "career_chat":[],
 
+    "mentor_chat":[],
+
     "ats_report_cache":"",
 
     # Resume Features
