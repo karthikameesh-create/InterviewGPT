@@ -42,6 +42,7 @@ def save_interview(
     score,
     report
 ):
+    create_table()
 
     conn = sqlite3.connect(
         DB_NAME
@@ -446,3 +447,8 @@ def calculate_career_score():
     )
 
     return score
+# ===================================
+# AUTO INITIALIZE DATABASE
+# ===================================
+
+create_table()
