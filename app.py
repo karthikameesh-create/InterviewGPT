@@ -5193,11 +5193,11 @@ AI resume, cover letter and every previous InterviewGPT activity while answering
         # AI MENTOR RESPONSE
         # ===================================
 
-        if st.session_state["mentor_chat"]:
+        if st.session_state.get("mentor_chat"):
 
             st.subheader("💬 AI Mentor Guidance")
 
-            for message in st.session_state["mentor_chat"]:
+            for message in st.session_state.get("mentor_chat", []):
 
                 with st.chat_message(message["role"]):
                     st.markdown(message["content"])
