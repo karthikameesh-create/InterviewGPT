@@ -4916,1118 +4916,533 @@ elif page == "🏢 Company Prep Mode":
             ) 
 
 # ===================================
-
 # AI CAREER MENTOR
-
 # ===================================
 
-
+# Near the top of your app (where you initialize session state), add:
+# if "mentor_chat" not in st.session_state:
+#     st.session_state["mentor_chat"] = []
 
 elif page == "🎯 Career Coach":
 
-
-
     st.title("🎯 InterviewGPT AI Career Mentor")
 
-
-
     st.caption(
-
         "Your personal AI mentor that learns from your complete InterviewGPT journey."
-
     )
-
-
 
     if not st.session_state.get("resume_text"):
 
-
-
         st.warning(
-
             "📄 Please upload your resume first."
-
         )
-
-
 
     else:
 
-
-
         st.success(
-
             "✅ Resume Loaded Successfully"
-
         )
 
-
-
         # ===================================
-
         # TARGET DETAILS
-
         # ===================================
-
-
 
         col1, col2 = st.columns(2)
 
-
-
         with col1:
 
-
-
             company = st.text_input(
-
-
-
                 "🎯 Dream Company",
-
-
-
                 placeholder="Google, Amazon, Microsoft..."
-
-
-
             )
-
-
 
         with col2:
 
-
-
             role = st.text_input(
-
-
-
                 "💼 Dream Role",
-
-
-
                 value="Software Engineer"
-
-
-
             )
-
-
 
         st.divider()
 
-
-
         # ===================================
-
         # BUILD INTERVIEWGPT MEMORY
-
         # ===================================
-
-
 
         mentor_context = {
 
-
-
             "resume": st.session_state.get(
-
                 "resume_text",
-
                 ""
-
             ),
-
-
 
             "resume_analysis": st.session_state.get(
-
                 "resume_analysis",
-
                 ""
-
             ),
-
-
 
             "ats_report": st.session_state.get(
-
                 "ats_report_cache",
-
                 ""
-
             ),
-
-
 
             "coding_history": "\n\n".join(
-
-
-
                 st.session_state.get(
-
                     "coding_history",
-
                     []
-
                 )
-
-
-
             ),
-
-
 
             "mock_interviews": "\n\n".join(
-
-
-
                 st.session_state.get(
-
                     "evaluations",
-
                     []
-
                 )
-
-
-
             ),
-
-
 
             "skill_gap": st.session_state.get(
-
                 "skill_gap_report",
-
                 ""
-
             ),
-
-
 
             "learning_roadmap": st.session_state.get(
-
                 "roadmap",
-
                 ""
-
             ),
-
-
 
             "company_prep": st.session_state.get(
-
                 "company_prep_report",
-
                 ""
-
             ),
-
-
 
             "company_insights": st.session_state.get(
-
                 "company_insights",
-
                 ""
-
             ),
-
-
 
             "company_questions": st.session_state.get(
-
                 "company_questions",
-
                 ""
-
             ),
-
-
 
             "hr_cheat_sheet": st.session_state.get(
-
                 "hr_cheat_sheet",
-
                 ""
-
             ),
-
-
 
             "job_description": st.session_state.get(
-
                 "job_description",
-
                 ""
-
             ),
-
-
 
             "ai_resume": st.session_state.get(
-
                 "ai_resume",
-
                 ""
-
             ),
 
-
-
             "cover_letter": st.session_state.get(
-
                 "cover_letter",
-
                 ""
-
             )
-
-
 
         }
 
-
-
         # ===================================
-
         # ASK YOUR AI MENTOR
-
         # ===================================
-
-
 
         st.subheader(
-
             "💬 Ask Your AI Mentor"
-
         )
 
-
-
         mentor_question = st.text_area(
-
-
-
             "Ask anything about your career",
-
-
-
             height=170,
-
-
-
             placeholder="""
-
 Examples:
-
-
 
 • Am I ready for Google?
 
-
-
 • Why am I not getting interviews?
-
-
 
 • Should I focus on DSA or Projects?
 
-
-
 • Should I learn AWS now?
-
-
 
 • What is my biggest weakness?
 
-
-
 • What should I do this weekend?
-
-
 
 • Is InterviewGPT enough as my major project?
 
-
-
 • Should I build another project?
-
-
 
 • Review my overall progress.
 
-
-
 • Give brutally honest career advice.
-
 """
-
-
-
         )
-
-
 
         st.info(
-
             """
-
 🧠 The AI Mentor will use your resume, resume analysis, coding rounds,
-
 mock interviews, skill gap reports, learning roadmap, company preparation,
-
 AI resume, cover letter and every previous InterviewGPT activity while answering.
-
 """
-
         )
-
-
 
         st.divider()
 
-
-
         col1, col2 = st.columns(2)
-
         with col1:
 
-
-
             if st.button(
-
-
-
                 "🚀 Generate AI Mentor Report",
-
-
-
                 use_container_width=True
-
-
-
             ):
-
-
 
                 try:
 
-
-
                     with st.spinner(
-
-
-
                         "Analyzing your complete InterviewGPT journey..."
-
-
-
                     ):
 
-
-
                         st.session_state[
-
                             "career_mentor_report"
-
                         ] = generate_ai_career_mentor(
-
-
-
                             mentor_context=mentor_context,
-
-
-
                             target_company=company,
-
-
-
                             target_role=role,
-
-
-
                             user_query=mentor_question
-
-
-
                         )
-
-
 
                 except Exception as e:
 
-
-
                     st.error(str(e))
-
-
 
         with col2:
 
-
-
             if st.button(
-
-
-
                 "💬 Ask AI Mentor",
-
-
-
                 use_container_width=True
-
-
-
             ):
-
-
 
                 if mentor_question.strip() == "":
 
-
-
                     st.warning(
-
-
-
                         "Please enter a question."
-
-
-
                     )
-
-
 
                 else:
 
-
-
                     try:
 
-
-
                         with st.spinner(
-
-
-
                             "Your AI mentor is thinking..."
-
-
-
                         ):
 
-
-
-                            mentor_chat = generate_ai_career_mentor(
-                            mentor_context=mentor_context,
-                            target_company=company,
-                            target_role=role,
-                            user_query=mentor_question
+                            mentor_chat_reply = generate_ai_career_mentor(
+                                mentor_context=mentor_context,
+                                target_company=company,
+                                target_role=role,
+                                user_query=mentor_question
                             )
 
-                            st.session_state["career_chat"].append(
-                            {
-                            "role": "user",
-                            "content": mentor_question
-                            }
-                        )
+                            st.session_state["mentor_chat"].append(
+                                {
+                                    "role": "user",
+                                    "content": mentor_question
+                                }
+                            )
 
-                        st.session_state["career_chat"].append(
-                            {
-                            "role": "assistant",
-                            "content": mentor_chat
-                            }
-                        )
-
-
+                            st.session_state["mentor_chat"].append(
+                                {
+                                    "role": "assistant",
+                                    "content": mentor_chat_reply
+                                }
+                            )
 
                     except Exception as e:
 
-
-
                         st.error(str(e))
-
-
 
         st.divider()
 
         # ===================================
-
         # AI CAREER MENTOR REPORT
-
         # ===================================
-
-
 
         if st.session_state.get(
-
             "career_mentor_report",
-
             ""
-
         ):
 
-
-
             st.subheader(
-
                 "🧠 Personalized AI Career Mentor Report"
-
             )
-
-
 
             st.markdown(
-
                 st.session_state[
-
                     "career_mentor_report"
-
                 ]
-
             )
 
-
-
             st.divider()
 
-
-
         # ===================================
-
         # AI MENTOR RESPONSE
-
         # ===================================
 
+        if st.session_state["mentor_chat"]:
 
+            st.subheader("💬 AI Mentor Guidance")
 
-        if st.session_state["career_chat"]:
+            for message in st.session_state["mentor_chat"]:
 
-         st.subheader("💬 AI Mentor Guidance")
-
-    for message in st.session_state["career_chat"]:
-
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
+                with st.chat_message(message["role"]):
+                    st.markdown(message["content"])
 
             st.divider()
 
-
-
         # ===================================
-
         # TODAY'S ACTION CENTER
-
         # ===================================
-
-
 
         st.subheader(
-
             "📌 Today's Career Dashboard"
-
         )
-
-
 
         c1, c2, c3 = st.columns(3)
 
-
-
         with c1:
 
-
-
             st.metric(
-
-
-
                 "Resume",
-
-
-
                 "Loaded" if st.session_state.get(
-
                     "resume_text"
-
                 ) else "Missing"
-
-
-
             )
-
-
 
             st.metric(
-
-
-
                 "Coding Reviews",
-
-
-
                 len(
-
                     st.session_state.get(
-
                         "coding_history",
-
                         []
-
                     )
-
                 )
-
-
-
             )
-
-
 
         with c2:
 
-
-
             st.metric(
-
-
-
                 "Mock Interviews",
-
-
-
                 len(
-
                     st.session_state.get(
-
                         "evaluations",
-
                         []
-
                     )
-
                 )
-
-
-
             )
-
-
 
             st.metric(
-
-
-
                 "Company Reports",
-
-
-
                 "Ready" if st.session_state.get(
-
                     "company_prep_report"
-
                 ) else "Pending"
-
-
-
             )
-
-
 
         with c3:
 
-
-
             st.metric(
-
-
-
                 "Roadmap",
-
-
-
                 "Generated" if st.session_state.get(
-
                     "roadmap"
-
                 ) else "Pending"
-
-
-
             )
-
-
 
             st.metric(
-
-
-
                 "Skill Gap",
-
-
-
                 "Available" if st.session_state.get(
-
                     "skill_gap_report"
-
                 ) else "Pending"
-
-
-
             )
-
-
 
         st.divider()
 
-
-
         # ===================================
-
         # QUICK CAREER CHECKLIST
-
         # ===================================
-
-
 
         st.subheader(
-
             "🚀 Career Checklist"
-
         )
-
-
 
         checklist = [
 
-
-
             (
-
                 "Resume Uploaded",
-
                 bool(
-
                     st.session_state.get(
-
                         "resume_text"
-
                     )
-
                 )
-
             ),
 
-
-
             (
-
                 "Resume Analyzed",
-
                 bool(
-
                     st.session_state.get(
-
                         "resume_analysis"
-
                     )
-
                 )
-
             ),
 
-
-
             (
-
                 "Coding Round Completed",
-
                 len(
-
                     st.session_state.get(
-
                         "coding_history",
-
                         []
-
                     )
-
                 ) > 0
-
             ),
 
-
-
             (
-
                 "Mock Interview Completed",
-
                 len(
-
                     st.session_state.get(
-
                         "evaluations",
-
                         []
-
                     )
-
                 ) > 0
-
             ),
 
-
-
             (
-
                 "Skill Gap Report Generated",
-
                 bool(
-
                     st.session_state.get(
-
                         "skill_gap_report"
-
                     )
-
                 )
-
             ),
 
-
-
             (
-
                 "Learning Roadmap Generated",
-
                 bool(
-
                     st.session_state.get(
-
                         "roadmap"
-
                     )
-
                 )
-
             ),
 
-
-
             (
-
                 "Company Preparation Completed",
-
                 bool(
-
                     st.session_state.get(
-
                         "company_prep_report"
-
                     )
-
                 )
-
             ),
 
-
-
             (
-
                 "AI Resume Generated",
-
                 bool(
-
                     st.session_state.get(
-
                         "ai_resume"
-
                     )
-
                 )
-
             )
-
-
 
         ]
 
-
-
         for title, status in checklist:
-
-
 
             if status:
 
-
-
                 st.success(
-
                     f"✅ {title}"
-
                 )
-
-
 
             else:
 
-
-
                 st.warning(
-
                     f"⚠ {title}"
-
                 )
-
-
 
         st.divider()
 
-
-
         # ===================================
-
         # NEXT STEPS
-
         # ===================================
-
-
 
         st.subheader(
-
             "🎯 Suggested Next Steps"
-
         )
 
-
-
         if not st.session_state.get(
-
             "resume_analysis"
-
         ):
 
-
-
             st.info(
-
                 "📄 Start by generating your Resume Analysis."
-
             )
 
-
-
         elif len(
-
             st.session_state.get(
-
                 "coding_history",
-
                 []
-
             )
-
         ) == 0:
 
-
-
             st.info(
-
                 "💻 Complete a Coding Interview."
-
             )
-
-
 
         elif len(
-
             st.session_state.get(
-
                 "evaluations",
-
                 []
-
             )
-
         ) == 0:
 
-
-
             st.info(
-
                 "🎤 Practice a Mock Interview."
-
             )
 
-
-
         elif not st.session_state.get(
-
             "skill_gap_report"
-
         ):
 
-
-
             st.info(
-
                 "📊 Generate your Skill Gap Report."
-
             )
 
-
-
         elif not st.session_state.get(
-
             "roadmap"
-
         ):
 
-
-
             st.info(
-
                 "🗺 Generate your Learning Roadmap."
-
             )
-
-
 
         elif not st.session_state.get(
-
             "company_prep_report"
-
         ):
 
-
-
             st.info(
-
                 "🏢 Prepare for your target company."
-
             )
-
-
 
         else:
 
-
-
             st.success(
-
                 """
-
 🎉 Excellent!
 You have completed almost every major InterviewGPT activity.
 Use the AI Mentor regularly to receive personalized career guidance as your profile evolves.
 """
-
-            ) 
+            )
 
 # ===================================
 
