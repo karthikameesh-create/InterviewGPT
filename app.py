@@ -4619,28 +4619,14 @@ elif page == "🏢 Company Prep Mode":
 
 
 
-                        st.session_state[
-
-
-
-                            "company_questions"
-
-
-
-                        ] = generate_interview_questions(
-
-
-
-                            company,
-
-
-
-                            role
-
-
-
+                        st.session_state["company_questions"] = generate_interview_questions(
+                        resume_text=st.session_state["resume_text"],
+                        company=company,
+                        role=role,
+                        experience="Fresher",
+                        category="Technical",
+                        num_questions=10
                         )
-
 
 
                 except Exception as e:
