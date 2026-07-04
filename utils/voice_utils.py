@@ -1,13 +1,19 @@
-from streamlit_mic_recorder import mic_recorder
+import os
 import tempfile
-import speech_recognition as sr
+
+from google import genai
+from google.genai import types
+from streamlit_mic_recorder import mic_recorder
+
+
+client = genai.Client(
+    api_key=os.getenv("GEMINI_API_KEY")
+)
 
 
 def speech_to_text():
     """
-    Records audio in the user's browser and converts it to text.
-    Returns:
-        str | None
+    Records audio from the browser and returns the transcript using Gemini.
     """
 
     audio = mic_recorder(
@@ -22,16 +28,36 @@ def speech_to_text():
         return None
 
     try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
+
+        # Save browser recording
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".webm"
+        ) as f:
+
             f.write(audio["bytes"])
             audio_path = f.name
 
-        recognizer = sr.Recognizer()
+        with open(audio_path, "rb") as f:
+            audio_bytes = f.read()
 
-        with sr.AudioFile(audio_path) as source:
-            recorded = recognizer.record(source)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                "Transcribe this audio. Return ONLY the spoken text. Do not add explanations.",
+                types.Part.from_bytes(
+                    data=audio_bytes,
+                    mime_type="audio/webm"
+                )
+            ]
+        )
 
-        return recognizer.recognize_google(recorded)
+        os.remove(audio_path)
+
+        if response.text:
+            return response.text.strip()
+
+        return "ERROR: No transcript returned."
 
     except Exception as e:
         return f"ERROR: {e}"
