@@ -25,3 +25,4 @@ PyJWT==2.13.0
 GitPython==3.1.50
 
 cryptography==49.0.0
+streamlit-mic-recorder==0.0.8
