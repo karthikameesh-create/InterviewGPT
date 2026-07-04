@@ -2636,1756 +2636,852 @@ elif page == "🎤 Question Bank":
 
 
 # ===================================
-
 # MOCK INTERVIEW
-
 # ===================================
-
 elif page == "🎙 Mock Interview":
 
-
-
     st.title(
-
         "🎙 AI Mock Interview"
-
     )
 
-
-
     if not st.session_state[
-
         "resume_text"
-
     ]:
 
-
-
         st.warning(
-
             "Upload Resume First"
-
         )
-
-
 
     else:
 
-
-
         company = st.text_input(
-
             "Target Company",
-
             placeholder="Google, OpenAI, Microsoft...",
-
             key="mock_company"
-
         )
-
-
 
         role = st.text_input(
-
             "Target Role",
-
             value="Software Engineer",
-
             key="mock_role"
-
         )
 
-
-
         experience = st.selectbox(
-
-
 
             "Experience Level",
 
-
-
             [
-
                 "Fresher",
-
                 "0-2 Years",
-
                 "2-5 Years",
-
                 "5+ Years"
-
             ],
 
-
-
             key="mock_exp"
-
         )
 
-
-
         st.divider()
-
-
 
         c1, c2 = st.columns(2)
 
-
-
         with c1:
 
-
-
             if st.button(
-
                 "🎯 Start Mock Interview",
-
                 use_container_width=True
-
             ):
-
-
 
                 try:
 
-
-
                     question = generate_mock_interview_question(
 
-
-
                         st.session_state[
-
                             "resume_text"
-
                         ],
-
-
 
                         company,
 
-
-
                         role,
-
-
 
                         experience,
 
-
-
                         "\n".join(
-
                             st.session_state[
-
                                 "mock_questions"
-
                             ]
-
                         )
-
                     )
 
-
-
                     st.session_state[
-
                         "current_mock_question"
-
                     ] = question
 
-
-
                     st.session_state[
-
                         "mock_questions"
-
                     ].append(
-
                         question
-
                     )
 
-
-
                     st.session_state[
-
                         "mock_count"
-
                     ] += 1
-
-
 
                 except Exception as e:
 
-
-
                     st.error(
-
                         str(e)
-
                     )
-
-
 
         with c2:
 
-
-
             if st.button(
-
                 "➡ Next Question",
-
                 use_container_width=True
-
             ):
 
-
-
                 try:
-
-
 
                     question = generate_mock_interview_question(
 
-
-
                         st.session_state[
-
                             "resume_text"
-
                         ],
-
-
 
                         company,
 
-
-
                         role,
-
-
 
                         experience,
 
-
-
                         "\n".join(
-
                             st.session_state[
-
                                 "mock_questions"
-
                             ]
-
                         )
-
                     )
 
-
-
                     st.session_state[
-
                         "current_mock_question"
-
                     ] = question
 
-
-
                     st.session_state[
-
                         "mock_questions"
-
                     ].append(
-
                         question
-
                     )
-
-
 
                 except Exception as e:
 
-
-
                     st.error(
-
                         str(e)
-
                     )
 
-
-
         if st.session_state[
-
             "current_mock_question"
-
         ]:
-
-
 
             st.divider()
 
-
-
             st.subheader(
-
                 "🎤 Interview Question"
-
             )
-
-
 
             st.info(
-
                 st.session_state[
-
                     "current_mock_question"
-
                 ]
-
             )
-
-
 
             answer = st.text_area(
 
-
-
                 "Your Answer",
 
-
-
                 height=250
-
             )
 
+            st.markdown("### 🎙 Voice Answer")
 
+            transcript = speech_to_text()
 
-            voice_col1, voice_col2 = st.columns(2)
+            if transcript:
 
+                if transcript.startswith("ERROR:"):
+                    st.error(transcript)
 
-
-            with voice_col1:
-
-
-
-                if st.button(
-
-                    "🎙 Voice To Text",
-
-                    use_container_width=True
-
-                ):
-
-
-
-                    try:
-
-
-
-                        transcript = speech_to_text()
-
-
-
-                        st.session_state[
-
-                            "voice_answer"
-
-                        ] = transcript
-
-
-
-                    except Exception as e:
-
-
-
-                        st.error(
-
-                            str(e)
-
-                        )
-
-
-
-            with voice_col2:
-
-
-
-                if st.session_state[
-
-                    "voice_answer"
-
-                ]:
-
-
-
-                    st.success(
-
-                        "Voice captured successfully."
-
-                    )
-
-
+                else:
+                    st.session_state["voice_answer"] = transcript
+                    st.success("✅ Voice captured successfully.")
 
             if st.session_state[
-
                 "voice_answer"
-
             ]:
 
-
-
                 answer = st.session_state[
-
                     "voice_answer"
-
                 ]
 
-
-
                 st.text_area(
-
-
 
                     "Transcribed Answer",
 
-
-
                     value=answer,
 
-
-
                     height=200
-
                 )
 
-
-
             if st.button(
-
                 "✅ Evaluate Answer",
-
                 use_container_width=True
-
             ):
-
-
 
                 if answer.strip() == "":
 
-
-
                     st.warning(
-
                         "Please provide an answer."
-
                     )
-
-
 
                 else:
 
-
-
                     try:
 
-
-
                         with st.spinner(
-
                             "Evaluating..."
-
                         ):
-
-
 
                             result = evaluate_answer(
 
-
-
                                 st.session_state[
-
                                     "current_mock_question"
-
                                 ],
 
-
-
                                 answer
-
                             )
 
-
-
                             st.session_state[
-
                                 "evaluations"
-
                             ].append(
-
                                 result
-
                             )
 
-
-
                             st.session_state[
-
                                 "attempted"
-
                             ] += 1
 
-
-
                         st.subheader(
-
                             "📊 Evaluation"
-
                         )
-
-
 
                         st.markdown(
-
                             result
-
                         )
-
-
 
                     except Exception as e:
 
-
-
                         st.error(
-
                             str(e)
-
                         )
 
-
-
         st.divider()
-
-
 
         s1, s2, s3 = st.columns(3)
 
-
-
         with s1:
 
-
-
             st.metric(
-
                 "Questions Attempted",
-
                 st.session_state[
-
                     "attempted"
-
                 ]
-
             )
-
-
 
         with s2:
 
-
-
             st.metric(
-
                 "Mock Interviews",
-
                 st.session_state[
-
                     "mock_count"
-
                 ]
-
             )
-
-
 
         with s3:
 
-
-
             readiness = min(
 
-
-
                 st.session_state[
-
                     "attempted"
-
                 ] * 5,
 
-
-
                 100
-
             )
-
-
 
             st.metric(
-
                 "Interview Readiness",
-
                 f"{readiness}%"
-
             )
 
-
-
         st.progress(
-
             readiness / 100
-
-        ) 
+        )
 
 # ===================================
-
 # AI RECRUITER SIMULATOR
-
 # ===================================
-
-
 
 elif page == "🎯 AI Recruiter Simulator":
 
-
-
     st.title("🎯 AI Recruiter Simulator")
 
-
-
     st.caption(
-
         "Experience a realistic AI-powered interview with dynamic follow-up questions."
-
     )
 
-
-
     # -----------------------------
-
     # Session State Defaults
-
     # -----------------------------
-
     if "recruiter_chat" not in st.session_state:
-
         st.session_state["recruiter_chat"] = []
 
-
-
     if "interview_started" not in st.session_state:
-
         st.session_state["interview_started"] = False
 
-
-
     if "interview_finished" not in st.session_state:
-
         st.session_state["interview_finished"] = False
 
-
-
     if "voice_answer" not in st.session_state:
-
         st.session_state["voice_answer"] = ""
 
-
-
     if "recruiter_evaluation" not in st.session_state:
-
         st.session_state["recruiter_evaluation"] = ""
 
-
-
     # -----------------------------
-
     # Resume Check
-
     # -----------------------------
-
     if not st.session_state.get(
-
         "resume_text",
-
         ""
-
     ):
 
-
-
         st.warning(
-
             "📄 Please upload your resume first."
-
         )
-
-
 
     else:
 
-
-
         st.subheader(
-
             "Interview Configuration"
-
         )
-
-
 
         col1, col2 = st.columns(2)
 
-
-
         with col1:
-
-
 
             company = st.text_input(
 
-
-
                 "Target Company",
 
-
-
                 value=st.session_state.get(
-
                     "current_company",
-
                     ""
-
                 ),
 
-
-
                 placeholder="Enter any company name..."
-
             )
-
-
 
             interview_type = st.selectbox(
 
-
-
                 "Interview Type",
 
-
-
                 [
-
-
 
                     "Technical",
 
-
-
                     "Behavioral",
-
-
 
                     "HR",
 
-
-
                     "Mixed",
-
-
 
                     "Managerial"
 
-
-
                 ]
-
             )
-
-
 
         with col2:
 
-
-
             role = st.text_input(
-
-
 
                 "Target Role",
 
-
-
                 value=st.session_state.get(
-
                     "current_role",
-
                     ""
-
                 ),
 
-
-
                 placeholder="Software Engineer"
-
             )
-
-
 
             difficulty = st.selectbox(
 
-
-
                 "Difficulty",
 
-
-
                 [
-
-
 
                     "Easy",
 
-
-
                     "Medium",
-
-
 
                     "Hard",
 
-
-
                     "Expert"
 
-
-
                 ]
-
             )
-
-
 
         experience = st.selectbox(
 
-
-
             "Experience",
-
-
 
             [
 
-
-
                 "Fresher",
-
-
 
                 "0-2 Years",
 
-
-
                 "2-5 Years",
-
-
 
                 "5+ Years"
 
-
-
             ]
-
         )
-
-
 
         st.divider()
 
-
-
         start_col1, start_col2 = st.columns(2)
-
-
 
         with start_col1:
 
-
-
             if st.button(
-
-
 
                 "▶ Start Interview",
 
-
-
                 use_container_width=True
-
-
 
             ):
 
-
-
                 st.session_state["current_company"] = company
-
                 st.session_state["current_role"] = role
-
                 st.session_state["current_experience"] = experience
-
                 st.session_state["current_interview_type"] = interview_type
-
                 st.session_state["current_difficulty"] = difficulty
 
-
-
                 st.session_state["recruiter_chat"] = []
-
                 st.session_state["voice_answer"] = ""
-
                 st.session_state["recruiter_evaluation"] = ""
 
-
-
                 st.session_state["interview_started"] = True
-
                 st.session_state["interview_finished"] = False
 
-
-
                 with st.spinner(
-
                     "Recruiter is joining..."
-
                 ):
-
-
 
                     recruiter = generate_recruiter_response(
 
-
-
                         st.session_state["resume_text"],
-
-
 
                         company,
 
-
-
                         role,
-
-
 
                         experience,
 
-
-
                         interview_type,
-
-
 
                         difficulty,
 
-
-
                         "",
-
-
 
                         "START_INTERVIEW"
 
-
-
                     )
-
-
 
                 st.session_state["recruiter_chat"].append(
 
-
-
                     {
 
-
-
                         "role": "assistant",
-
-
 
                         "content": recruiter
 
-
-
                     }
-
-
 
                 )
 
-
-
                 st.rerun()
-
-
 
         with start_col2:
 
-
-
             if st.button(
-
-
 
                 "🗑 Reset Interview",
 
-
-
                 use_container_width=True
-
-
 
             ):
 
-
-
                 st.session_state["recruiter_chat"] = []
-
                 st.session_state["voice_answer"] = ""
-
                 st.session_state["recruiter_evaluation"] = ""
 
-
-
                 st.session_state["interview_started"] = False
-
                 st.session_state["interview_finished"] = False
-
-
 
                 st.rerun()
 
-                        # ===================================
-
-        # LIVE INTERVIEW
-
         # ===================================
-
-
+        # LIVE INTERVIEW
+        # ===================================
 
         if st.session_state["interview_started"]:
 
-
-
             st.subheader(
-
                 "💬 Live Interview"
-
             )
 
-
-
             for message in st.session_state[
-
                 "recruiter_chat"
-
             ]:
 
-
-
                 with st.chat_message(
-
                     message["role"]
-
                 ):
 
-
-
                     st.markdown(
-
                         message["content"]
-
                     )
-
-
 
             st.divider()
 
-
-
             # -----------------------------
-
             # Voice Controls
-
             # -----------------------------
-
-
 
             voice_col1, voice_col2 = st.columns(2)
 
-
-
             with voice_col1:
 
+                st.markdown("### 🎙 Voice Answer")
 
+                transcript = speech_to_text()
 
-                if st.button(
+                if transcript:
 
-                    "🎙 Voice Answer",
+                    if transcript.startswith("ERROR:"):
+                        st.error(transcript)
 
-                    use_container_width=True
-
-                ):
-
-
-
-                    try:
-
-
-
-                        transcript = speech_to_text()
-
-
-
-                        if transcript:
-
-
-
-                            st.session_state[
-
-                                "voice_answer"
-
-                            ] = transcript
-
-
-
-                            st.success(
-
-                                "✅ Voice captured successfully."
-
-                            )
-
-
-
-                            st.rerun()
-
-
-
-                    except Exception as e:
-
-
-
-                        st.error(str(e))
-
-
+                    else:
+                        st.session_state["voice_answer"] = transcript
+                        st.success("✅ Voice captured successfully.")
 
             with voice_col2:
 
-
-
                 if st.button(
-
                     "⏹ End Interview",
-
                     use_container_width=True
-
                 ):
 
-
-
                     st.session_state[
-
                         "interview_finished"
-
                     ] = True
-
-
 
                     st.rerun()
 
-
-
             # -----------------------------
-
             # Show Voice Answer
-
             # -----------------------------
-
-
 
             if st.session_state[
-
                 "voice_answer"
-
             ]:
-
-
 
                 st.text_area(
 
-
-
                     "Voice Transcript",
 
-
-
                     value=st.session_state[
-
                         "voice_answer"
-
                     ],
-
-
 
                     height=150,
 
-
-
                     disabled=False
-
                 )
 
-
-
             # -----------------------------
-
             # Chat Input
-
             # -----------------------------
-
-
 
             typed_answer = st.chat_input(
-
                 "Type your answer..."
-
             )
-
-
 
             answer = None
 
-
-
             if typed_answer:
-
-
 
                 answer = typed_answer
 
-
-
             elif st.session_state[
-
                 "voice_answer"
-
             ]:
 
-
-
                 answer = st.session_state[
-
                     "voice_answer"
-
                 ]
 
-
-
                 st.session_state[
-
                     "voice_answer"
-
                 ] = ""
 
-
-
             # -----------------------------
-
             # Send User Answer
-
             # -----------------------------
-
-
 
             if answer:
 
-
-
                 st.session_state[
-
                     "recruiter_chat"
-
                 ].append(
 
-
-
                     {
-
-
 
                         "role": "user",
 
-
-
                         "content": answer
-
-
 
                     }
 
-
-
                 )
-
-
 
                 conversation = "\n\n".join(
 
-
-
                     [
-
-
 
                         f"{msg['role'].upper()}: {msg['content']}"
 
-
-
                         for msg in st.session_state[
-
                             "recruiter_chat"
-
                         ]
-
-
 
                     ]
 
-
-
                 )
 
-
-
                 with st.spinner(
-
                     "Recruiter is thinking..."
-
                 ):
-
-
 
                     recruiter_reply = generate_recruiter_response(
 
-
-
                         st.session_state[
-
                             "resume_text"
-
                         ],
 
-
-
                         st.session_state[
-
                             "current_company"
-
                         ],
 
-
-
                         st.session_state[
-
                             "current_role"
-
                         ],
 
-
-
                         st.session_state[
-
                             "current_experience"
-
                         ],
 
-
-
                         st.session_state[
-
                             "current_interview_type"
-
                         ],
-
-
 
                         st.session_state[
-
                             "current_difficulty"
-
                         ],
-
-
 
                         conversation,
 
-
-
                         answer
-
-
 
                     )
 
-
-
                 st.session_state[
-
                     "recruiter_chat"
-
                 ].append(
-
-
 
                     {
 
-
-
                         "role": "assistant",
-
-
 
                         "content": recruiter_reply
 
-
-
                     }
-
-
 
                 )
 
-
-
                 if recruiter_reply.startswith(
-
                     "[END_INTERVIEW]"
-
                 ):
 
-
-
                     st.session_state[
-
                         "interview_finished"
-
                     ] = True
-
-
 
                 st.rerun()
 
-                        # ===================================
-
-        # INTERVIEW FINISHED
-
         # ===================================
-
-
+        # INTERVIEW FINISHED
+        # ===================================
 
         if st.session_state["interview_finished"]:
 
-
-
             st.divider()
 
-
-
             st.success(
-
                 "✅ Interview Completed"
-
             )
-
-
 
             conversation = "\n\n".join(
 
-
-
                 [
-
-
 
                     f"{m['role'].upper()}: {m['content']}"
 
-
-
                     for m in st.session_state[
-
                         "recruiter_chat"
-
                     ]
-
-
 
                 ]
 
-
-
             )
-
-
 
             st.subheader(
-
                 "📄 Interview Transcript"
-
             )
-
-
 
             st.text_area(
 
-
-
                 "Conversation",
-
-
 
                 conversation,
 
-
-
                 height=450
 
-
-
             )
-
-
 
             st.divider()
 
-
-
             st.subheader(
-
                 "📊 Recruiter Evaluation"
-
             )
 
-
-
             if not st.session_state.get(
-
                 "recruiter_evaluation",
-
                 ""
-
             ):
-
-
 
                 try:
 
-
-
                     with st.spinner(
-
                         "Generating Recruiter Evaluation..."
-
                     ):
 
-
-
                         st.session_state[
-
                             "recruiter_evaluation"
-
                         ] = generate_recruiter_evaluation(
 
-
-
                             resume_text=st.session_state[
-
                                 "resume_text"
-
                             ],
-
-
 
                             conversation=conversation,
 
-
-
                             company=st.session_state[
-
                                 "current_company"
-
                             ],
 
-
-
                             role=st.session_state[
-
                                 "current_role"
-
                             ]
-
-
 
                         )
 
-
-
                 except Exception as e:
-
-
 
                     st.error(str(e))
 
-
-
             if st.session_state.get(
-
                 "recruiter_evaluation",
-
                 ""
-
             ):
-
-
 
                 st.markdown(
 
-
-
                     st.session_state[
-
                         "recruiter_evaluation"
-
                     ]
-
-
 
                 )
 
-
-
             st.divider()
-
-
 
             col1, col2 = st.columns(2)
 
-
-
             with col1:
-
-
 
                 if st.button(
 
-
-
                     "🔄 Start New Interview",
 
-
-
                     use_container_width=True
-
-
 
                 ):
 
-
-
                     st.session_state[
-
                         "recruiter_chat"
-
                     ] = []
 
-
-
                     st.session_state[
-
                         "voice_answer"
-
                     ] = ""
 
-
-
                     st.session_state[
-
                         "recruiter_evaluation"
-
                     ] = ""
 
-
-
                     st.session_state[
-
                         "interview_started"
-
                     ] = False
-
-
 
                     st.session_state[
-
                         "interview_finished"
-
                     ] = False
-
-
 
                     st.rerun()
 
-
-
             with col2:
-
-
 
                 st.download_button(
 
-
-
                     "📥 Download Transcript",
-
-
 
                     data=conversation,
 
-
-
                     file_name="Interview_Transcript.txt",
-
-
 
                     mime="text/plain",
 
-
-
                     use_container_width=True
 
-
-
-                ) 
+                )
 
 # ===================================
 
